@@ -5,8 +5,65 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>canvas画板</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  hello world
+  <!--<div id="canvas"></div>-->
+  <canvas id="canvas" width="300" height="200"></canvas>
+  <script>
+    // 需求：实现鼠标画线
+    /*方案一：操作Dom实现
+    canvas.onmousemove = (e) => { // 鼠标移动过程中不断创建div实现画线效果
+      console.log(e.clientX)
+      console.log(e.clientY)
+      // clientX/Y 得到鼠标的位置
+      let div = document.createElement('div') // 创建 div （仅在内存中）
+      div.style.position = 'absolute'
+      div.style.left = e.clientX + 'px'
+      div.style.top = e.clientY + 'px'
+      div.style.width = '6px'
+      div.style.height = '6px'
+      div.style.marginLeft = '-3px'
+      div.style.marginTop = '-3px'
+      div.style.borderRadius="50%"
+      div.style.backgroundColor="black"
+      canvas.appendChild(div)
+      // 缺点：js操作dom，需要跨线程通信，非常耗性能（卡顿）
+    }*/
+
+    //  方案二：canvas
+    let canvas = document.getElementById('canvas')
+    canvas.width = document.documentElement.clientWidth // 获取文档宽高
+    canvas.height = document.documentElement.clientHeight
+    //  画线
+    let ctx = canvas.getContext('2d')
+    ctx.fillStyle = 'rgb(0,123,123)' // 填充样式
+    ctx.strokeStyle = 'red' // 描边样式
+
+    let painting = false
+
+    canvas.onmousedown = () => {
+      painting = true
+    }
+
+    canvas.onmousemove = (e) => {
+      if (painting === true) {
+        // console.log(e.clientX)
+        // console.log(e.clientY)
+        // 画方块
+        // ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10)
+        // 画圆点
+        ctx.beginPath()
+        ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI) // 圆形
+        // ctx.stroke() // 是否描边
+        ctx.fill() // 是否填充
+      } else {
+        console.log('什么也不做')
+      }
+    }
+    canvas.onmouseup = () => {
+      painting = false
+    }
+  </script>
 </body>
 </html>
