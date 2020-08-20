@@ -5,9 +5,11 @@
 }
 #canvas {
   /*height: 100vh;*/
-  border: 1px solid red;
+  /*border: 1px solid red;*/
+  /*background-color: rgba(0,0,0,.1);*/
   display: block;
 }
 body{
-  border: 1px solid blue;
+  /*background-color: rgba(0,0,0,.1);*/
+  /*border: 1px solid blue;*/
 }

@@ -31,38 +31,111 @@
       // 缺点：js操作dom，需要跨线程通信，非常耗性能（卡顿）
     }*/
 
-    //  方案二：canvas
-    let canvas = document.getElementById('canvas')
+    //  方案二：canvas 画点
+    /*let canvas = document.getElementById('canvas')
     canvas.width = document.documentElement.clientWidth // 获取文档宽高
     canvas.height = document.documentElement.clientHeight
     //  画线
     let ctx = canvas.getContext('2d')
     ctx.fillStyle = 'rgb(0,123,123)' // 填充样式
     ctx.strokeStyle = 'red' // 描边样式
-
     let painting = false
 
-    canvas.onmousedown = () => {
-      painting = true
-    }
+    // pc端 or 移动端
+    var isTouchDevice = 'ontouchstart' in document.documentElement
+    console.log(isTouchDevice)  // 移动端-true / pc端-false
 
-    canvas.onmousemove = (e) => {
-      if (painting === true) {
-        // console.log(e.clientX)
-        // console.log(e.clientY)
-        // 画方块
-        // ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10)
-        // 画圆点
+    if (isTouchDevice) {
+      // 移动端
+      canvas.ontouchmove = (e) => {
+        // console.log(e.touches[0]) // 第一个接触到屏幕的手指的数据
+        let x = e.touches[0].clientX  // 获取到移动坐标
+        let y = e.touches[0].clientY
+        // console.log(x, y)
         ctx.beginPath()
-        ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI) // 圆形
-        // ctx.stroke() // 是否描边
+        ctx.arc(x, y, 10, 0, 2 * Math.PI) // 圆形
         ctx.fill() // 是否填充
-      } else {
-        console.log('什么也不做')
+      }
+    } else {
+      // PC端
+      canvas.onmousedown = () => {
+        painting = true
+      }
+      canvas.onmousemove = (e) => {
+        if (painting === true) {
+          // console.log(e.clientX)
+          // console.log(e.clientY)
+          // 画方块
+          // ctx.fillRect(e.clientX - 5, e.clientY - 5, 10, 10)
+          // 画圆点
+          ctx.beginPath()
+          ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI) // 圆形
+          // ctx.stroke() // 是否描边
+          ctx.fill() // 是否填充
+        } else {
+          console.log('什么也不做')
+        }
+      }
+      canvas.onmouseup = () => {
+        painting = false
+      }
+    }*/
+
+    // canvas 画线
+    let canvas = document.getElementById('canvas')
+    canvas.width = document.documentElement.clientWidth // 获取文档宽高
+    canvas.height = document.documentElement.clientHeight
+
+    let painting = false // pc 判断是否处于画图状态
+    let last  // 用于保存上一次的坐标
+
+    //  画线
+    let ctx = canvas.getContext('2d')
+    ctx.fillStyle = 'rgb(0,123,123)' // 填充样式
+    ctx.strokeStyle = 'gray' // 描边样式
+    ctx.lineWidth = 10 // 线宽
+    ctx.lineCap = 'round' // 每个线末尾为圆角
+
+    // pc端 or 移动端
+    var isTouchDevice = 'ontouchstart' in document.documentElement
+    console.log(isTouchDevice)  // 移动端-true / pc端-false
+
+    if (isTouchDevice) {
+      // 移动端
+      canvas.ontouchstart = (e) => {
+        let x = e.touches[0].clientX // 获取起始touch的坐标
+        let y = e.touches[0].clientY
+        last = [x, y]
+      }
+      canvas.ontouchmove = (e) => {
+        let x = e.touches[0].clientX
+        let y = e.touches[0].clientY
+        drawLine(last[0], last[1], x, y) // 移动后，将当前坐标与上一次坐标连接
+        last = [x, y] // 不断更新上一次坐标，实现连线
+      }
+    } else {
+      // PC端
+      canvas.onmousedown = (e) => {
+        painting = true
+        last = [e.clientX, e.clientY]
+      }
+      canvas.onmousemove = (e) => {
+        if (painting === true) {
+          // drawLine(0, 0, e.clientX, e.clientY)
+          drawLine(last[0], last[1], e.clientX, e.clientY)
+          last = [e.clientX, e.clientY]  // 让 last 实时更新, 每次连接上一次与本次的坐标
+        }
+      }
+      canvas.onmouseup = () => {
+        painting = false
       }
     }
-    canvas.onmouseup = () => {
-      painting = false
+
+    function drawLine(x1, y1, x2, y2) {
+      ctx.beginPath()
+      ctx.moveTo(x1, y1)
+      ctx.lineTo(x2, y2)
+      ctx.stroke()
     }
   </script>
 </body>
